@@ -199,7 +199,7 @@ engine = On
 ; Development Value: Off
 ; Production Value: Off
 ; http://php.net/short-open-tag
-short_open_tag = ${SHORT_OPEN_TAG}
+short_open_tag = Off
 
 ; The number of significant digits displayed in floating point numbers.
 ; http://php.net/precision
@@ -296,7 +296,7 @@ serialize_precision = 17
 ; This directive allows you to disable certain functions for security reasons.
 ; It receives a comma-delimited list of function names.
 ; http://php.net/disable-functions
-disable_functions =
+disable_functions = ${DISABLE_FUNCTIONS}
 
 ; This directive allows you to disable certain classes for security reasons.
 ; It receives a comma-delimited list of class names.
@@ -515,7 +515,7 @@ report_memleaks = On
 ; Development Value: Off
 ; Production Value: Off
 ; http://php.net/track-errors
-track_errors = ${TRACK_ERRORS}
+;track_errors = Off
 
 ; Turn off normal error reporting and emit XML-RPC error XML
 ; http://php.net/xmlrpc-errors
@@ -532,7 +532,7 @@ track_errors = ${TRACK_ERRORS}
 ; Development Value: On
 ; Production value: On
 ; http://php.net/html-errors
-html_errors = ${HTML_ERRORS}
+html_errors = On
 
 ; If html_errors is set to On *and* docref_root is not empty, then PHP
 ; produces clickable error messages that direct to a page describing the error
@@ -705,7 +705,6 @@ default_charset = "UTF-8"
 ;
 ; PHP's default setting for include_path is ".;/path/to/php/pear"
 ; http://php.net/include-path
-include_path = ${INCLUDE_PATH}
 
 ; The root of the PHP pages, used only if nonempty.
 ; if PHP was not compiled with FORCE_REDIRECT, you SHOULD set doc_root
@@ -798,7 +797,7 @@ upload_tmp_dir = /tmp
 
 ; Maximum allowed size for uploaded files.
 ; http://php.net/upload-max-filesize
-upload_max_filesize = 200M
+upload_max_filesize = ${UPLOAD_MAX_FILESIZE}
 
 ; Maximum number of files that can be uploaded via a single request
 max_file_uploads = 20
@@ -875,7 +874,7 @@ cli_server.color = On
 [Date]
 ; Defines the default timezone used by the date functions
 ; http://php.net/date.timezone
-date.timezone = GMT
+date.timezone = ${TIMEZONE}
 
 ; http://php.net/date.default-latitude
 ;date.default_latitude = 31.7667
@@ -1176,7 +1175,7 @@ bcmath.scale = 0
 [Session]
 ; Handler used to store/retrieve data.
 ; http://php.net/session.save-handler
-session.save_handler = ${SESSION_HANDLER}
+session.save_handler = files
 
 ; Argument passed to save_handler.  In the case of files, this is the path
 ; where data files are stored. Note: Windows users have to change this
@@ -1209,7 +1208,7 @@ session.save_handler = ${SESSION_HANDLER}
 ; RPM note : session directory must be owned by process owner
 ; for mod_php, see /etc/httpd/conf.d/php.conf
 ; for php-fpm, see /etc/php-fpm.d/*conf
-session.save_path = ${SESSION_PATH}
+session.save_path = "/tmp/session"
 
 ; Whether to use strict session mode.
 ; Strict session mode does not accept uninitialized session ID and regenerate
@@ -1224,7 +1223,7 @@ session.use_strict_mode = 0
 session.use_cookies = 1
 
 ; http://php.net/session.cookie-secure
-session.cookie_secure = ${SESSION_COOKIE_SECURE}
+;session.cookie_secure =
 
 ; This option forces PHP to fetch and use a cookie for storing and maintaining
 ; the session id. We encourage this operation as it's very helpful in combating
@@ -1235,7 +1234,7 @@ session.use_only_cookies = 1
 
 ; Name of the session (used as cookie name).
 ; http://php.net/session.name
-session.name = ${SESSION_NAME}
+session.name = VSOOLE
 
 ; Initialize session on request startup.
 ; http://php.net/session.auto-start
@@ -1251,11 +1250,11 @@ session.cookie_path = /
 
 ; The domain for which the cookie is valid.
 ; http://php.net/session.cookie-domain
-session.cookie_domain = ${SESSION_COOKIE_DOMAIN}
+session.cookie_domain = 
 
 ; Whether or not to add the httpOnly flag to the cookie, which makes it inaccessible to browser scripting languages such as JavaScript.
 ; http://php.net/session.cookie-httponly
-session.cookie_httponly = ${SESSION_COOKIE_HTTPONLY}
+session.cookie_httponly = 
 
 ; Handler used to serialize data.  php is the standard serializer of PHP.
 ; http://php.net/session.serialize-handler

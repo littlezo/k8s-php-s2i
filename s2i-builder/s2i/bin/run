@@ -1,10 +1,22 @@
-#!/bin/bash -e
+#!/bin/bash
 #
-# S2I run script for the 'php-centos7' image.
+# S2I run script for the 'php-73-centos7' image.
 # The run script executes the server that runs your application.
-#
-# For more information see the documentation:
-#	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
-#
+# Default php.ini configuration values, all taken
+# from php defaults.
 
+export DB_HOST=${DB_HOST:-localhost}
+export DB_USER=${DB_USER:-root}
+export DB_PASSWORD=${DB_PASSWORD:-password}
+export REDIS_HOST=${REDIS_HOST:-localhost}
+export REDIS_USER=${REDIS_USER:-""}
+export REDIS_PASSWORD=${REDIS_PASSWORD:-""}
+export DISABLE_FUNCTIONS=${DISABLE_FUNCTIONS:-exec}
+export PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-128M}
+export ERROR_REPORTING=${ERROR_REPORTING:-E_ALL & ~E_NOTICE}
+export DISPLAY_ERRORS=${DISPLAY_ERRORS:-OFF}
+export DISPLAY_STARTUP_ERRORS=${DISPLAY_STARTUP_ERRORS:-OFF}
+export UPLOAD_MAX_FILESIZE=${UPLOAD_MAX_FILESIZE:-200M}
+export TIMEZONE=${TIMEZONE:-Asia/Shanghai}
+envsubst < /vsoole/app/php.ini.template > ${PHP_SYSCONF_PATH}/php.ini
 exec php -S 0.0.0.0:9501

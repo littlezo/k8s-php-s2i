@@ -6,6 +6,7 @@ ENV PHP_VERSION=7.3 \
     SWOOLE_VERSION=4.5.0 \
     PHPREDIS_VERSION=5.2.1 \
     NAME=php \
+    APP_ROOT=/vsoole/app \
     PATH=$PATH:/opt/rh/rh-php73/root/usr/bin
 
 ENV SUMMARY="Platform for building and running PHP $PHP_VERSION applications" \
@@ -42,6 +43,8 @@ RUN yum install -y centos-release-scl && \
     yum install -y openssl openssl-devel supervisor unzip zlib-dev git wget \
         --setopt=tsflags=nodocs $INSTALL_PKGS --nogpgcheck && \
     rpm -V $INSTALL_PKGS && \
+    yum -y update  && \
+    yum -y upgrade  && \
     yum -y clean all --enablerepo='*'
 
 # Redis 扩展下载 pecl本地安装 开启扩展
@@ -64,15 +67,19 @@ RUN wget https://github.com/swoole/swoole-src/archive/v${SWOOLE_VERSION}.tar.gz 
     && rm -r /tmp/swoole
 
 ENV PHP_CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/php/ \
-    APP_DATA=${APP_ROOT}/src \
+    APP_DATA=${APP_ROOT} \
+    HOME=${APP_ROOT} \
     PHP_DEFAULT_INCLUDE_PATH=/opt/rh/rh-php73/root/usr/share/pear \
     PHP_SYSCONF_PATH=/etc/opt/rh/rh-php73 \
     SCL_ENABLED=rh-php73
 COPY ./s2i/bin/ /usr/libexec/s2i
 COPY ./etc/php.d/* /etc/opt/rh/rh-php73/php.d/
+COPY ./etc/php.ini.template /vsoole/app/php.ini.template
+RUN su root -
 RUN mkdir -p /vsoole/app
-RUN chown -R 1001:1001 /vsoole/app
-
+RUN mkdir -p /tmp/sessions
+RUN chown -R 1001:0 /vsoole/app
+RUN chown -R 1001:0 /etc/opt/rh/rh-php73
 USER 1001
 
 EXPOSE 9501

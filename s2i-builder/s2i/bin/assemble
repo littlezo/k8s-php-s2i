@@ -11,13 +11,17 @@ set -e
 shopt -s dotglob
 echo "---> Installing application source..."
 mv /tmp/src/* ./
-
 # Fix source directory permissions
 fix-permissions ./
 
 # If the 'php-centos7' assemble script is executed with the '-h' flag, print the usage.
 if [[ "$1" == "-h" ]]; then
 	exec /usr/libexec/s2i/usage
+fi
+
+if [ -d .git ]; then
+  echo "Found '.git', update dependencies using git pull... "
+	git pull
 fi
 
 if [ -f composer.json ]; then
@@ -57,8 +61,5 @@ if [ -f composer.json ]; then
 fi
 
 echo "---> Building and installing application from source..."
-if [ -f php.ini.template ]; then
-  mv php.ini.template /etc/opt/rh/rh-php73/php.ini
-fi
 
 fix-permissions ./

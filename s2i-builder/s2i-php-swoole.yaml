@@ -1,0 +1,84 @@
+apiVersion: devops.kubesphere.io/v1alpha1
+kind: S2iBuilderTemplate
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+    builder-type.kubesphere.io/s2i: "s2i"
+  annotations:
+      descriptionCN: "php swoole 应用的构建器模版。"
+      descriptionEN: "php swoole available as container is a base platform"
+      devops.kubesphere.io/s2i-template-url: https://github.com/littlezo/k8s-php-s2i
+  name: php-s2i
+spec:
+  containerInfo:
+    - builderImage: soinx/php-73-centos7:latest
+  environment:
+    - key: DB_HOST
+      type: string
+      description: "数据库地址"
+      required: false
+      defaultValue: ""
+    - key: DB_USER
+      type: string
+      description: "数据库用户名"
+      required: false
+      defaultValue: "root"
+    - key: DB_PASSWORD
+      type: string
+      description: "数据库密码"
+      required: false
+      defaultValue: "password"
+    - key: REDIS_HOST
+      type: string
+      description: "REDIS地址"
+      required: false
+      defaultValue: ""
+    - key: REDIS_USER
+      type: string
+      description: "REDIS用户名"
+      required: false
+      defaultValue: "root"
+    - key: REDIS_PASSWORD
+      type: string
+      description: "REDIS密码"
+      required: false
+      defaultValue: "password"
+    - key: DISABLE_FUNCTIONS
+      type: string
+      description: "PHP危险函数禁用"
+      required: false
+      defaultValue: "password"
+    - key: PHP_MEMORY_LIMIT
+      type: string
+      description: "PHP_MEMORY_LIMIT"
+      required: false
+      defaultValue: "128M"
+    - key: ERROR_REPORTING
+      type: string
+      description: "ERROR_REPORTING"
+      required: false
+      defaultValue: "E_ALL & ~E_NOTICE"
+    - key: DISPLAY_ERRORS
+      type: string
+      description: "DISPLAY_ERRORS"
+      required: false
+      defaultValue: "OFF"
+    - key: DISPLAY_STARTUP_ERRORS
+      type: string
+      description: "DISPLAY_STARTUP_ERRORS"
+      required: false
+      defaultValue: "OFF"
+    - key: UPLOAD_MAX_FILESIZE
+      type: string
+      description: "UPLOAD_MAX_FILESIZE"
+      required: false
+      defaultValue: "200M"
+    - key: TIMEZONE
+      type: string
+      description: "TIMEZONE"
+      required: false
+      defaultValue: "Asia/Shanghai"
+  codeFramework: php # 代码框架类型
+  defaultBaseImage: soinx/php-73-centos7:latest # 默认使用的构建器镜像 (可替换为自定义的镜像)
+  version: 0.0.6 # 构建器模版的版本
+  description: "This is a S2I builder template for php builds whose result can be run directly without any further application server.." # 构建器模版的描述信息
