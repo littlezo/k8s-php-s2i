@@ -21,8 +21,8 @@ Create a *Dockerfile* that installs all of the necessary tools and libraries tha
 
 ##### assemble
 Create an *assemble* script that will build our application, e.g.:
-- build python modules
-- bundle install ruby gems
+- build php modules
+- bundle install composer
 - setup application specific configuration
 
 The script can also specify a way to restore any saved artifacts from the previous image.   
