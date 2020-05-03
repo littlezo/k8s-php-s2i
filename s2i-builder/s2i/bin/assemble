@@ -1,0 +1,64 @@
+#!/bin/bash -e
+#
+# S2I assemble script for the 'php-centos7' image.
+# The 'assemble' script builds your application source so that it is ready to run.
+#
+# For more information refer to the documentation:
+#	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
+#
+set -e
+
+shopt -s dotglob
+echo "---> Installing application source..."
+mv /tmp/src/* ./
+
+# Fix source directory permissions
+fix-permissions ./
+
+# If the 'php-centos7' assemble script is executed with the '-h' flag, print the usage.
+if [[ "$1" == "-h" ]]; then
+	exec /usr/libexec/s2i/usage
+fi
+
+if [ -f composer.json ]; then
+  echo "Found 'composer.json', installing dependencies using composer.phar... "
+
+  # Install Composer
+  # TEMPFILE= "/vsoole/app/"
+  RETRIES=6
+  for ((i=0; i<$RETRIES; i++)); do
+
+    if [ -z "$COMPOSER_INSTALLER" ]; then
+      export COMPOSER_INSTALLER="https://mirrors.aliyun.com/composer/composer.phar"
+    fi
+
+    echo "Downloading $COMPOSER_INSTALLER, attempt $((i+1))/$RETRIES"
+    wget  $COMPOSER_INSTALLER && break
+    sleep 10
+  done
+  if [[ $i == $RETRIES ]]; then
+    echo "Download failed, giving up."
+    exit 1
+  fi
+
+  # Change the repo mirror if provided
+  if [ -f composer.phar ]; then
+    chmod +x composer.phar
+    ./composer.phar config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+    ./composer.phar self-update
+  fi
+
+  # Install App dependencies using Composer
+  ./composer.phar install --no-interaction --no-ansi  --no-dev --optimize-autoloader
+
+  if [ ! -f composer.lock ]; then
+    echo -e "\nConsider adding a 'composer.lock' file into your source repository.\n"
+  fi
+fi
+
+echo "---> Building and installing application from source..."
+if [ -f php.ini.template ]; then
+  mv php.ini.template /etc/opt/rh/rh-php73/php.ini
+fi
+
+fix-permissions ./
