@@ -51,7 +51,7 @@ cd s2i-builder
 make build
 ```
 输出如下信息代表构建成功
-
+Successfully tagged soinx/php-73-centos7:latest
 镜像完成构建后 命令 *s2i usage php-73-centos7* 将打印出用法脚本中定义的帮助信息.
 
 #### 测试镜像构建
