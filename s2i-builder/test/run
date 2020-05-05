@@ -32,7 +32,7 @@ cid_file=$($MKTEMP_EXEC -u)
 s2i_args="--pull-policy=never --loglevel=2"
 
 # Port the image exposes service to be tested
-test_port=8080
+test_port=9501
 
 image_exists() {
   docker inspect $1 &>/dev/null
@@ -51,10 +51,7 @@ container_port() {
 }
 
 run_s2i_build() {
-  echo 'run_s2i_build'
-  echo ${test_dir}
   s2i build --incremental=true ${s2i_args} ${test_dir}/test-app ${IMAGE_NAME} ${IMAGE_NAME}-testapp
-  ls ${test_dir}/test-app
 }
 
 prepare() {
@@ -113,18 +110,6 @@ test_usage() {
   s2i usage ${s2i_args} ${IMAGE_NAME} &>/dev/null
 }
 
-test_session() {
-  local check_port=$1 ; shift
-  local check_protocol=${1:-http}
-  cat $cid_file
-  info "Testing PHP session"
-  response=$(curl -s -k ${check_protocol}://$(container_ip):${check_port}/session_test.php)
-  if [ "${response}" != "Passed" ]; then
-    echo "ERROR starting PHP session. Test app returned: '${response}'"
-    return 1
-  fi
-}
-
 test_connection() {
   echo "Testing HTTP connection (http://$(container_ip):$(container_port))"
   local max_attempts=10
@@ -135,8 +120,6 @@ test_connection() {
     echo "Sending GET request to http://$(container_ip):$(container_port)/"
     response_code=$(curl -s -w %{http_code} -o /dev/null http://$(container_ip):$(container_port)/)
     status=$?
-    echo $status
-    echo $response_code
     if [ $status -eq 0 ]; then
       if [ $response_code -eq 200 ]; then
         result=0
@@ -170,3 +153,4 @@ check_result $?
 
 cleanup
 
+echo "All tests finished successfully."

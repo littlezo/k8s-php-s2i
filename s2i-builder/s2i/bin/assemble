@@ -44,7 +44,6 @@ if [ -f composer.json ]; then
   if [ -f composer.phar ]; then
     chmod +x composer.phar
     ./composer.phar config -g repo.packagist composer https://mirrors.aliyun.com/composer/
-    # ./composer.phar self-update
   fi
 
   # Install App dependencies using Composer
