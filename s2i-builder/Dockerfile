@@ -1,12 +1,11 @@
 # php-centos7
 FROM centos/s2i-base-centos7
 
-ENV PHP_VERSION=7.3 \
+ENV NAME=php \
+    PHP_VERSION=7.3 \
     PHP_VER_SHORT=73 \
     SWOOLE_VERSION=4.5.0 \
     PHPREDIS_VERSION=5.2.1 \
-    NAME=php \
-    APP_ROOT=/vsoole/app \
     PATH=$PATH:/opt/rh/rh-php73/root/usr/bin
 
 ENV SUMMARY="Platform for building and running PHP $PHP_VERSION applications" \
@@ -43,8 +42,8 @@ RUN yum install -y centos-release-scl && \
     yum install -y openssl openssl-devel supervisor unzip zlib-dev git wget \
         --setopt=tsflags=nodocs $INSTALL_PKGS --nogpgcheck && \
     rpm -V $INSTALL_PKGS && \
-    yum -y update  && \
-    yum -y upgrade  && \
+    yum -y --setopt=tsflags=nodocs update --nogpgcheck && \
+    yum -y --setopt=tsflags=nodocs upgrade --nogpgcheck && \
     yum -y clean all --enablerepo='*'
 
 # Redis 扩展下载 pecl本地安装 开启扩展
@@ -66,26 +65,33 @@ RUN wget https://github.com/swoole/swoole-src/archive/v${SWOOLE_VERSION}.tar.gz 
     ) \
     && rm -r /tmp/swoole
 
-ENV PHP_CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/php/ \
+ENV PHP_CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/php \
+    APP_ROOT=/vsoole/app \
     APP_DATA=${APP_ROOT} \
-    HOME=${APP_ROOT} \
     PHP_DEFAULT_INCLUDE_PATH=/opt/rh/rh-php73/root/usr/share/pear \
+    STI_SCRIPTS_URL=image:///usr/libexec/s2i \
+    STI_SCRIPTS_PATH=/usr/libexec/s2i \
+    HOME=${APP_ROOT}/src \
+    PATH=${APP_ROOT}/src/bin:${APP_ROOT}/bin:$PATH \
     PHP_SYSCONF_PATH=/etc/opt/rh/rh-php73 \
     SCL_ENABLED=rh-php73
-COPY ./s2i/bin/ /usr/libexec/s2i
-COPY ./etc/php.d/* /etc/opt/rh/rh-php73/php.d/
-COPY ./etc/php.ini.template /vsoole/app/php.ini.template
-RUN su root -
-RUN mkdir -p /vsoole/app
-RUN mkdir -p /tmp/sessions
-RUN chown -R 1001:0 /vsoole/app
-RUN chown -R 1001:0 /etc/opt/rh/rh-php73
+
+ENV BASH_ENV=${APP_ROOT}/etc/scl_enable \
+    ENV=${APP_ROOT}/etc/scl_enable \
+    PROMPT_COMMAND=". ${APP_ROOT}/etc/scl_enable"
+
+COPY ./s2i/bin/ $STI_SCRIPTS_PATH
+
+COPY ./root/ /
+RUN /usr/libexec/container-setup
+RUN rpm-file-permissions && \
+  chown -R 1001:0 ${APP_ROOT}
 USER 1001
 
 EXPOSE 9501
 EXPOSE 9502
 EXPOSE 9503
 
-WORKDIR /vsoole/app
+WORKDIR ${HOME}
 
-CMD ["/usr/libexec/s2i/usage"]
+CMD $STI_SCRIPTS_PATH/usage

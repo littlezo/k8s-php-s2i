@@ -63,7 +63,7 @@ The application image combines the builder image with your applications source c
 The following command will create the application image:
 ```
 cd s2i-builder
-s2i build ./test/test-app soinx/php-73-centos7 soinx/php-73-centos7-app
+s2i build ./test/test-app soinx/php-73-centos7 php-73-centos7-app-test
 ---> Building and installing application from source...
 ```
 Using the logic defined in the *assemble* script, s2i will now create an application image using the builder image as a base and including the source code from the test/test-app directory. 
@@ -72,7 +72,7 @@ Using the logic defined in the *assemble* script, s2i will now create an applica
 Running the application image is as simple as invoking the docker run command:
 ```
 cd s2i-builder
-docker run -d -p 9501:9501 soinx/php-73-centos7-app
+docker run -d -p 9501:9501 -v ./test/test-app:/vsoole/app/src soinx/php-73-centos7
 ```
 The application, which consists of a simple static web page, should now be accessible at  [http://localhost:8080](http://localhost:8080).
 

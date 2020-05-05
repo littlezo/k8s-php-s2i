@@ -1,6 +1,6 @@
 #!/bin/bash -e
 DISTRO=`cat /etc/*-release | grep ^ID= | grep -Po '".*?"' | tr -d '"'`
-NAMESPACE=centos
+NAMESPACE=soinx
 [[ $DISTRO =~ rhel* ]] && NAMESPACE=rhscl
 
 cat <<EOF
@@ -9,11 +9,10 @@ To use it, install S2I: https://github.com/openshift/source-to-image
 
 Sample invocation:
 
-s2i build <source code path/URL> php-centos7 <application image>
-s2i build https://github.com/sclorg/s2i-php-container.git --context-dir=/7.3/test/test-app/ ${NAMESPACE}/php-73-${DISTRO}7 php-test-app
+s2i build <source code path/URL> soinx/php-73-centos7 <application image>
+s2i build https://github.com/littlezo/k8s-php-s2i.git --context-dir=/test/test-app/ ${NAMESPACE}/php-73-${DISTRO}7 php-73-test-app
 
+支持框架 thinkphp hyperf swoft 和标准PHP项目 
 
-You can then run the resulting image via:
-run -p 8080:8080 php-test-app
-docker run <application image>
+非 thinkphp hyperf swoft 项目会识别 public/index.php 或者 index.php 文件是否存在 请确保项目目录下存在index.php 或者publix/indx.php
 EOF
