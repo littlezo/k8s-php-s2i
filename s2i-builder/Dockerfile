@@ -1,5 +1,5 @@
 # php-centos7
-FROM centos/s2i-base-centos7
+FROM littlezo/s2i-base-centos7
 
 ENV NAME=php \
     PHP_VERSION=7.3 \
@@ -21,12 +21,15 @@ LABEL summary="${SUMMARY}" \
       description="${DESCRIPTION}" \
       io.k8s.description="${DESCRIPTION}" \
       io.k8s.display-name="PHP ${PHP_VERSION}" \
-      io.openshift.expose-services="9501:http" \
-      io.openshift.tags="builder,${NAME},${NAME}${PHP_VER_SHORT},rh-${NAME}${PHP_VER_SHORT}" \
-      io.openshift.s2i.scripts-url="image:///usr/libexec/s2i" \
+      io.kubesphere.expose-services="9501:http" \
+      io.kubesphere.tags="builder,${NAME},${NAME}${PHP_VER_SHORT},rh-${NAME}${PHP_VER_SHORT}" \
+      io.kubesphere.s2i.scripts-url="image:///usr/libexec/s2i" \
       io.s2i.scripts-url="image:///usr/libexec/s2i" \
-      name="soinx/${NAME}-${PHP_VER_SHORT}-centos7" \
-      com.redhat.component="rh-${NAME}${PHP_VER_SHORT}-container" \
+      name="littlezo/${NAME}-${PHP_VER_SHORT}-centos7" \
+      com.cloudify.dev-mode="DEV_MODE:false" \
+      com.cloudify.deployments-dir="${APP_ROOT}/src" \
+      com.cloudify.dev-mode.port="DEBUG_PORT:5858"\
+      com.cloudify.component="rh-${NAME}${PHP_VER_SHORT}-container" \
       version="${PHP_VERSION}" \
       help="For more information visit https://github.com/littlezo/k8s-php-s2i.git" \
       usage="s2i build https://github.com/sclorg/s2i-php-container.git --context-dir=${PHP_VERSION}/test/test-app centos/${NAME}-${PHP_VER_SHORT}-centos7 sample-server" \
@@ -66,13 +69,10 @@ RUN wget https://github.com/swoole/swoole-src/archive/v${SWOOLE_VERSION}.tar.gz 
     && rm -r /tmp/swoole
 
 ENV PHP_CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/php \
-    APP_ROOT=/vsoole/app \
     APP_DATA=${APP_ROOT} \
     PHP_DEFAULT_INCLUDE_PATH=/opt/rh/rh-php73/root/usr/share/pear \
     STI_SCRIPTS_URL=image:///usr/libexec/s2i \
     STI_SCRIPTS_PATH=/usr/libexec/s2i \
-    HOME=${APP_ROOT}/src \
-    PATH=${APP_ROOT}/src/bin:${APP_ROOT}/bin:$PATH \
     PHP_SYSCONF_PATH=/etc/opt/rh/rh-php73 \
     SCL_ENABLED=rh-php73
 

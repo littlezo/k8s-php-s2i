@@ -1,4 +1,4 @@
-IMAGE_NAME = soinx/php-73-centos7
+IMAGE_NAME = littlezo/php-73-centos7
 
 .PHONY: build
 build:

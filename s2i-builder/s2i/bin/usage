@@ -1,6 +1,6 @@
 #!/bin/bash -e
 DISTRO=`cat /etc/*-release | grep ^ID= | grep -Po '".*?"' | tr -d '"'`
-NAMESPACE=soinx
+NAMESPACE=littlezo
 [[ $DISTRO =~ rhel* ]] && NAMESPACE=rhscl
 
 cat <<EOF
@@ -9,7 +9,7 @@ To use it, install S2I: https://github.com/openshift/source-to-image
 
 Sample invocation:
 
-s2i build <source code path/URL> soinx/php-73-centos7 <application image>
+s2i build <source code path/URL> littlezo/php-73-centos7 <application image>
 s2i build https://github.com/littlezo/k8s-php-s2i.git --context-dir=/test/test-app/ ${NAMESPACE}/php-73-${DISTRO}7 php-73-test-app
 
 支持框架 thinkphp hyperf swoft 和标准PHP项目 

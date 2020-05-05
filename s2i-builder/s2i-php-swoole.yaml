@@ -11,7 +11,7 @@ metadata:
   name: php-s2i
 spec:
   containerInfo:
-    - builderImage: soinx/php-73-centos7:latest
+    - builderImage: littlezo/php-73-centos7:latest
   environment:
     - key: DB_HOST
       type: string
@@ -79,6 +79,6 @@ spec:
       required: false
       defaultValue: "Asia/Shanghai"
   codeFramework: php # 代码框架类型
-  defaultBaseImage: soinx/php-73-centos7:latest # 默认使用的构建器镜像 (可替换为自定义的镜像)
+  defaultBaseImage: littlezo/php-73-centos7:latest # 默认使用的构建器镜像 (可替换为自定义的镜像)
   version: 1.0.0 # 构建器模版的版本
   description: "This is a S2I builder template for php builds whose result can be run directly without any further application server.." # 构建器模版的描述信息

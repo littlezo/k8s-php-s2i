@@ -51,8 +51,8 @@ cd s2i-builder
 make build
 ```
 输出如下信息代表构建成功
-Successfully tagged soinx/php-73-centos7:latest
-镜像完成构建后 命令 *s2i usage php-73-centos7* 将打印出用法脚本中定义的帮助信息.
+Successfully tagged littlezo/php-73-centos7:latest
+镜像完成构建后 命令 *s2i usage littlezo/php-73-centos7* 将打印出用法脚本中定义的帮助信息.
 
 #### 测试镜像构建
 可以使用以下命令测试镜像：
@@ -61,11 +61,12 @@ cd s2i-builder
 make test
 ```
 
-#### 运行应用程序镜像
+#### 运行测试镜像
 运行应用程序映像就像调用docker run命令一样简单：
 ```
 cd s2i-builder
-docker run -d -p 9501:9501 -v ./test/test-app:/vsoole/app/src soinx/php-73-centos7
+docker run -d -p 9501:9501 -v test/test-app:/vsoole/app/src littlezo/php-73-centos7-test
+docker run -d -p 9501:9501 littlezo/php-73-centos7-test
 ```
 该应用程序由一个简单的静态网页组成，现在应该可以从 [http://localhost:8080](http://localhost:8080)进行访问 。
 
