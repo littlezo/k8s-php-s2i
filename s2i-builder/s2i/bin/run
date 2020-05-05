@@ -38,7 +38,7 @@ elif [ -f bin/swoft ]; then
     echo "---> 识别到是 swoft 项目 正在启动中..."
     exec php ./bin/swoft http:start
 elif [ -f public/index.php ]; then
-    echo "---> 识别到是普通PHP项目 正在启动中..."
+    echo "---> 识别到是普通PHP项目 运行路径 public 正在启动中..."
     exec php -S 0.0.0.0:9501 public/
 elif [ -f index.php ]; then
     echo "---> 识别到是普通PHP项目 正在启动中..."
