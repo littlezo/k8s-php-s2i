@@ -1,89 +1,78 @@
 
-# Creating a basic PHP S2I builder image  
+# 创建基本的PHP S2I镜像构建器 
 
-## Getting started  
+## 入门 
 
-### Files and Directories  
-| File                   | Required? | Description                                                  |
+### 依赖环境
+- docker >= 1.6
+- Go >= 1.7.1
+- go-md2man
+- (可选) Git
+### 文件和目录
+| 文件                   | 必须 | 描述                                               |
 |------------------------|-----------|--------------------------------------------------------------|
-| Dockerfile             | Yes       | Defines the base builder image                               |
-| s2i/bin/assemble       | Yes       | Script that builds the application                           |
-| s2i/bin/usage          | Yes        | Script that prints the usage of the builder                  |
-| s2i/bin/run            | Yes       | Script that runs the application                             |
-| s2i/bin/save-artifacts | No        | Script for incremental builds that saves the built artifacts |
-| test/run               | Yes        | Test script for the builder image                            |
-| test/test-app          | Yes       | Test application source code                                 |
+| s2i-builder/Dockerfile             | Yes       | 定义基础构建镜像                   |
+| s2i-builder/s2i/bin/assemble       | Yes       | 生成应用程序的脚本                 |
+| s2i-builder/s2i/bin/usage          | Yes       | 构建用法描述脚本                   |
+| s2i-builder/s2i/bin/run            | Yes       | 运行应用程序的脚本                 |
+| s2i-builder/s2i/bin/save-artifacts | No        | 用于增量构建的脚本，用于保存构建的工件 |
+| s2i-builder/test/run               | Yes       | 镜像构建测试脚本                   |
+| s2i-builder/test/test-app          | Yes       | 测试应用程序源代码                 |
 
 #### Dockerfile
-Create a *Dockerfile* that installs all of the necessary tools and libraries that are needed to build and run our application.  This file will also handle copying the s2i scripts into the created image.
+创建一个Dockerfile，其中安装了构建和运行应用程序所需的所有必要工具和库。该文件还将处理将s2i脚本复制到创建的映像中的过程。
 
-#### S2I scripts
+#### S2I脚本
 
 ##### assemble
-Create an *assemble* script that will build our application, e.g.:
-- build php modules
-- bundle install composer
-- setup application specific configuration
+创建一个汇编脚本来构建我们的应用程序，例如：
+- 构建PHP模块
+- 捆绑安装 composer
+- 设置应用程序特定的配置
 
-The script can also specify a way to restore any saved artifacts from the previous image.   
+该脚本还可以指定一种基础镜像还原所有保存的工件的方法。   
 
 ##### run
-Create a *run* script that will start the application. 
+创建一个运行脚本，将启动应用程序。
 
-##### save-artifacts (optional)
-Create a *save-artifacts* script which allows a new build to reuse content from a previous version of the application image.
+##### save-artifacts (可选)
+创建一个save-artifacts脚本，该脚本允许新版本重用应用程序映像先前版本中的内容。
 
-##### usage (optional) 
-Create a *usage* script that will print out instructions on how to use the image.
+##### usage (可选) 
+创建一个用法脚本，该脚本将打印出有关如何使用图像的说明。
 
-##### Make the scripts executable 
-Make sure that all of the scripts are executable by running *chmod +x s2i/bin/**
+##### 脚本权限添加
+chmod +x s2i/bin/* 添加脚本文件可执行权限。
 
-#### Create the builder image
-The following command will create a builder image named php-centos7 based on the Dockerfile that was created previously.
+#### 开始构建镜像
+应用程序映像将构建器映像与您的应用程序源代码组合在一起，该源代码可通过Dockerfile安装，使用汇编脚本进行编译并使用运行脚本运行的任何应用程序来提供。以下命令将创建应用程序映像：
 ```
 cd s2i-builder
-docker build -t soinx/php-73-centos7 .
+make build
 ```
-The builder image can also be created by using the *make* command since a *Makefile* is included.
+输出如下信息代表构建成功
 
-Once the image has finished building, the command *s2i usage php-73-centos7* will print out the help info that was defined in the *usage* script.
+镜像完成构建后 命令 *s2i usage php-73-centos7* 将打印出用法脚本中定义的帮助信息.
 
-#### Testing the builder image
-The builder image can be tested using the following commands:
+#### 测试镜像构建
+可以使用以下命令测试镜像：
 ```
 cd s2i-builder
-docker build -t php-73-centos7-candidate .
-IMAGE_NAME=php-73-centos7-candidate test/run
+make test
 ```
-The builder image can also be tested by using the *make test* command since a *Makefile* is included.
 
-#### Creating the application image
-The application image combines the builder image with your applications source code, which is served using whatever application is installed via the *Dockerfile*, compiled using the *assemble* script, and run using the *run* script.
-The following command will create the application image:
-```
-cd s2i-builder
-s2i build ./test/test-app soinx/php-73-centos7 php-73-centos7-app-test
----> Building and installing application from source...
-```
-Using the logic defined in the *assemble* script, s2i will now create an application image using the builder image as a base and including the source code from the test/test-app directory. 
-
-#### Running the application image
-Running the application image is as simple as invoking the docker run command:
+#### 运行应用程序镜像
+运行应用程序映像就像调用docker run命令一样简单：
 ```
 cd s2i-builder
 docker run -d -p 9501:9501 -v ./test/test-app:/vsoole/app/src soinx/php-73-centos7
 ```
-The application, which consists of a simple static web page, should now be accessible at  [http://localhost:8080](http://localhost:8080).
+该应用程序由一个简单的静态网页组成，现在应该可以从 [http://localhost:8080](http://localhost:8080)进行访问 。
 
-#### Using the saved artifacts script
-Rebuilding the application using the saved artifacts can be accomplished using the following command:
+#### kubesphere 应用模板定义
+推送 镜像到镜像仓库 
+修改 s2i-php-swoole.yaml 中的 defaultBaseImage 和 builderImage 为你的镜像地址
+使用如下命令 推送模板到 kubesphere集群 
 ```
-s2i build --incremental=true test/test-app nginx-centos7 nginx-app
----> Restoring build artifacts...
----> Building and installing application from source...
-```
-This will run the *save-artifacts* script which includes the custom code to backup the currently running application source, rebuild the application image, and then re-deploy the previously saved source using the *assemble* script.
-
-#### kubesphere s2ibuildertemplate  configured
 kubectl apply -f s2i-php-swoole.yaml
+```
