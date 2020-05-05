@@ -28,7 +28,7 @@ LABEL summary="${SUMMARY}" \
       name="soinx/${NAME}-${PHP_VER_SHORT}-centos7" \
       com.redhat.component="rh-${NAME}${PHP_VER_SHORT}-container" \
       version="${PHP_VERSION}" \
-      help="For more information visit https://github.com/sclorg/s2i-${NAME}-container" \
+      help="For more information visit https://github.com/littlezo/k8s-php-s2i.git" \
       usage="s2i build https://github.com/sclorg/s2i-php-container.git --context-dir=${PHP_VERSION}/test/test-app centos/${NAME}-${PHP_VER_SHORT}-centos7 sample-server" \
       maintainer="@小小只 <soinco@qq.com>"
 
