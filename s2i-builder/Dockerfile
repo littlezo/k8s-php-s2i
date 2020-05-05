@@ -85,6 +85,7 @@ COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 COPY ./root/ /
 RUN /usr/libexec/container-setup
 RUN rpm-file-permissions && \
+  chown -R 1001:0 ${PHP_SYSCONF_PATH} && \
   chown -R 1001:0 ${APP_ROOT}
 USER 1001
 

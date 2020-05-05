@@ -34,6 +34,10 @@ s2i_args="--pull-policy=never --loglevel=2"
 # Port the image exposes service to be tested
 test_port=9501
 
+info() {
+  echo -e "\n\e[1m[INFO] $@...\e[0m\n"
+}
+
 image_exists() {
   docker inspect $1 &>/dev/null
 }
@@ -56,7 +60,7 @@ run_s2i_build() {
 
 prepare() {
   if ! image_exists ${IMAGE_NAME}; then
-    echo "ERROR: The image ${IMAGE_NAME} must exist before this script is executed."
+    info "ERROR: The image ${IMAGE_NAME} must exist before this script is executed."
     exit 1
   fi
   # s2i build requires the application is a valid 'Git' repository
@@ -86,7 +90,7 @@ cleanup() {
 check_result() {
   local result="$1"
   if [[ "$result" != "0" ]]; then
-    echo "S2I image '${IMAGE_NAME}' test FAILED (exit code: ${result})"
+    info "S2I image '${IMAGE_NAME}' test FAILED (exit code: ${result})"
     cleanup
     exit $result
   fi
@@ -99,25 +103,25 @@ wait_for_cid() {
   local result=1
   while [ $attempt -le $max_attempts ]; do
     [ -f $cid_file ] && break
-    echo "Waiting for container to start..."
+    info "Waiting for container to start..."
     attempt=$(( $attempt + 1 ))
     sleep $sleep_time
   done
 }
 
 test_usage() {
-  echo "Testing 's2i usage'..."
+  info "Testing 's2i usage'..."
   s2i usage ${s2i_args} ${IMAGE_NAME} &>/dev/null
 }
 
 test_connection() {
-  echo "Testing HTTP connection (http://$(container_ip):$(container_port))"
+  info "Testing HTTP connection (http://$(container_ip):$(container_port))"
   local max_attempts=10
   local sleep_time=1
   local attempt=1
   local result=1
   while [ $attempt -le $max_attempts ]; do
-    echo "Sending GET request to http://$(container_ip):$(container_port)/"
+    info "Sending GET request to http://$(container_ip):$(container_port)/"
     response_code=$(curl -s -w %{http_code} -o /dev/null http://$(container_ip):$(container_port)/)
     status=$?
     if [ $status -eq 0 ]; then
@@ -153,4 +157,4 @@ check_result $?
 
 cleanup
 
-echo "All tests finished successfully."
+info "All tests finished successfully."

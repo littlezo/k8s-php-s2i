@@ -4,29 +4,6 @@ source ${PHP_CONTAINER_SCRIPTS_PATH}/common.sh
 
 export DOCUMENTROOT=${DOCUMENTROOT:-/}
 
-# Default php.ini configuration values, all taken
-# from php defaults.
-export DB_HOST=${DB_HOST:-localhost}
-export DB_USER=${DB_USER:-root}
-export DB_PASSWORD=${DB_PASSWORD:-password}
-export REDIS_HOST=${REDIS_HOST:-localhost}
-export REDIS_USER=${REDIS_USER:-""}
-export REDIS_PASSWORD=${REDIS_PASSWORD:-""}
-export DISABLE_FUNCTIONS=${DISABLE_FUNCTIONS:-exec}
-export PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-128M}
-export ERROR_REPORTING=${ERROR_REPORTING:-E_ALL & ~E_NOTICE}
-export DISPLAY_ERRORS=${DISPLAY_ERRORS:-OFF}
-export DISPLAY_STARTUP_ERRORS=${DISPLAY_STARTUP_ERRORS:-OFF}
-export UPLOAD_MAX_FILESIZE=${UPLOAD_MAX_FILESIZE:-200M}
-export TIMEZONE=${TIMEZONE:-Asia/Shanghai}
-
-export PHPRC=${PHPRC:-${PHP_SYSCONF_PATH}/php.ini}
-export PHP_INI_SCAN_DIR=${PHP_INI_SCAN_DIR:-${PHP_SYSCONF_PATH}/php.d}
-
-envsubst < /vsoole/app/etc/php.ini.template > ${PHP_SYSCONF_PATH}/php.ini
-envsubst < /vsoole/app/etc/php.d/20-swoole.ini.template > ${PHP_SYSCONF_PATH}/20-swoole.ini
-envsubst < /vsoole/app/etc/php.d/99-redis.ini.template > ${PHP_SYSCONF_PATH}/99-redis.ini
-
 # 常见框架启动方法
 if [ -f think ]; then
     echo "---> 识别到是 thinkphp 项目 正在启动中..."
@@ -39,7 +16,7 @@ elif [ -f bin/swoft ]; then
     exec php ./bin/swoft http:start
 elif [ -f public/index.php ]; then
     echo "---> 识别到是普通PHP项目 运行路径 public 正在启动中..."
-    exec php -S 0.0.0.0:9501 public/
+    exec php -S 0.0.0.0:9501 -t public/
 elif [ -f index.php ]; then
     echo "---> 识别到是普通PHP项目 正在启动中..."
     exec php -S 0.0.0.0:9501

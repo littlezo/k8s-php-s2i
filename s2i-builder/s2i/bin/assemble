@@ -9,11 +9,35 @@ echo "---> Installing application source..."
 mv /tmp/src/* ./
 # Fix source directory permissions
 fix-permissions ./
+fix-permissions ${PHP_SYSCONF_PATH}
 
 # If the 'php-centos7' assemble script is executed with the '-h' flag, print the usage.
 if [[ "$1" == "-h" ]]; then
 	exec /usr/libexec/s2i/usage
 fi
+
+# Default php.ini configuration values, all taken
+# from php defaults.
+export DB_HOST=${DB_HOST:-localhost}
+export DB_USER=${DB_USER:-root}
+export DB_PASSWORD=${DB_PASSWORD:-password}
+export REDIS_HOST=${REDIS_HOST:-localhost}
+export REDIS_USER=${REDIS_USER:-""}
+export REDIS_PASSWORD=${REDIS_PASSWORD:-""}
+export DISABLE_FUNCTIONS=${DISABLE_FUNCTIONS:-exec}
+export PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-128M}
+export ERROR_REPORTING=${ERROR_REPORTING:-E_ALL & ~E_NOTICE}
+export DISPLAY_ERRORS=${DISPLAY_ERRORS:-OFF}
+export DISPLAY_STARTUP_ERRORS=${DISPLAY_STARTUP_ERRORS:-OFF}
+export UPLOAD_MAX_FILESIZE=${UPLOAD_MAX_FILESIZE:-200M}
+export TIMEZONE=${TIMEZONE:-Asia/Shanghai}
+
+export PHPRC=${PHPRC:-${PHP_SYSCONF_PATH}/php.ini}
+export PHP_INI_SCAN_DIR=${PHP_INI_SCAN_DIR:-${PHP_SYSCONF_PATH}/php.d}
+
+envsubst < /vsoole/app/etc/php.ini.template > ${PHP_SYSCONF_PATH}/php.ini
+envsubst < /vsoole/app/etc/php.d/50-swoole.ini.template > ${PHP_INI_SCAN_DIR}/50-swoole.ini
+envsubst < /vsoole/app/etc/php.d/99-redis.ini.template > ${PHP_INI_SCAN_DIR}/99-redis.ini
 
 if [ -d .git ]; then
   echo "Found '.git', update dependencies using git pull... "
@@ -48,6 +72,7 @@ if [ -f composer.json ]; then
 
   # Install App dependencies using Composer
   ./composer.phar install --no-interaction --no-ansi  --no-dev --optimize-autoloader
+  ./composer.phar update --no-interaction --no-ansi  --no-dev --optimize-autoloader
 
   if [ ! -f composer.lock ]; then
     echo -e "\nConsider adding a 'composer.lock' file into your source repository.\n"
